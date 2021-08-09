@@ -1,0 +1,128 @@
+Index: core/src/com/mygdx/Actors/AnalogStick.java
+===================================================================
+--- core/src/com/mygdx/Actors/AnalogStick.java	(revision ee822df3a88e7b0d2c1dff3fbc4619b9ae425de5)
++++ core/src/com/mygdx/Actors/AnalogStick.java	(revision ee822df3a88e7b0d2c1dff3fbc4619b9ae425de5)
+@@ -1,41 +0,0 @@
+-package com.mygdx.Actors;
+-
+-import com.badlogic.gdx.graphics.Texture;
+-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+-
+-public class AnalogStick extends Touchpad
+-{
+-    private static Touchpad.TouchpadStyle touchpadStyle;
+-    private static Skin touchpadSkin;
+-    private static Drawable touchBackground;
+-    private static Drawable touchKnob;
+-
+-    public AnalogStick(float x, float y) {
+-
+-        super(10, getTouchpadStyle());
+-        setBounds(15, 15, 200, 200);
+-        setPosition(x,y);
+-
+-    }
+-
+-    private static Touchpad.TouchpadStyle getTouchpadStyle() {
+-
+-        touchpadSkin = new Skin();
+-        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
+-
+-        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
+-
+-        touchpadStyle = new Touchpad.TouchpadStyle();
+-
+-        touchBackground = touchpadSkin.getDrawable("touchBackground");
+-        touchKnob = touchpadSkin.getDrawable("touchKnob");
+-
+-        touchpadStyle.background = touchBackground;
+-        touchpadStyle.knob = touchKnob;
+-
+-        return touchpadStyle;
+-    }
+-}
+-
+Index: core/src/com/mygdx/Screens/MainGameScreen.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- core/src/com/mygdx/Screens/MainGameScreen.java	(revision ee822df3a88e7b0d2c1dff3fbc4619b9ae425de5)
++++ core/src/com/mygdx/Screens/MainGameScreen.java	(date 1622057605443)
+@@ -3,56 +3,33 @@
+ import com.badlogic.gdx.Gdx;
+ import com.badlogic.gdx.graphics.GL20;
+ import com.badlogic.gdx.graphics.Texture;
+-import com.badlogic.gdx.graphics.g2d.Batch;
+-import com.badlogic.gdx.graphics.g2d.Sprite;
+ import com.badlogic.gdx.graphics.g2d.TextureRegion;
+-import com.badlogic.gdx.scenes.scene2d.Actor;
+-import com.badlogic.gdx.scenes.scene2d.InputListener;
+ import com.badlogic.gdx.scenes.scene2d.Stage;
+-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+ import com.mygdx.Actors.ActorHero;
+-import com.mygdx.Actors.AnalogStick;
+ 
+ 
+ public class MainGameScreen extends BaseScreen {
+-
+-
+-    private Batch batch;
+-
+     public MainGameScreen(MainGame game) {
+         super(game);
+-        asMove = new AnalogStick(15,15);
+-        Gdx.input.setInputProcessor(stage);
+         textureHero = new Texture("CharacterTilesSet-Right.png");
+-        spriteHero = new Sprite(textureHero);
++        regionHero = new TextureRegion(textureHero, textureHero.getWidth(), textureHero.getHeight());
+     }
+ 
+     private Stage stage;
+     private ActorHero actorHero;
+     private Texture textureHero;
+-    private Sprite spriteHero;
+-    private AnalogStick asMove;
++    private TextureRegion regionHero;
++
++
+ 
+     @Override
+     public void show() {
+-        stage = new Stage(new ScreenViewport(), batch);
+-        actorHero = new ActorHero(spriteHero);
+-        actorHero.setPosition(stage.getWidth() / 3, stage.getHeight() / 2);
++        stage = new Stage();
++        actorHero = new ActorHero(regionHero);
+         stage.addActor(actorHero);
+-        stage.addActor(asMove);
+-        Gdx.input.setInputProcessor(stage);
+-//        actorHero.rotateBy(180);
+-//        actorHero.act(100);
+-        asMove.addListener(new ChangeListener() {
+-            @Override
+-            public void changed(ChangeEvent event, Actor actor) {
+-                float deltaX = ((Touchpad) actor).getKnobPercentX();
+-                float deltaY = ((Touchpad) actor).getKnobPercentY();
+-
+-            }
+-        });
++        actorHero.setPosition(stage.getWidth() / 3, stage.getHeight() / 2);
++        actorHero.rotateBy(180);
++        actorHero.act(100);
+     }
+ 
+     @Override
+@@ -65,7 +42,7 @@
+     public void render(float delta) {
+         Gdx.gl.glClearColor(0, 0, 0, 1f);
+         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+-        stage.act(Gdx.graphics.getDeltaTime());
++        stage.act();
+         stage.draw();
+     }
+ 
